@@ -8,6 +8,11 @@
 
 <%@page import="datapack.*" %>
 <%@page import="java.util.*"%>
+<%@page import="java.io.*" %>
+<%@page import="javax.mail.*"%>
+<%@page import="javax.mail.internet.*" %>
+<%@page import="javax.activation.*"%>
+<%@page import="javax.mail.Session,javax.mail.Transport" %>
 
 <jsp:include page="header.jsp"/>
 <%   Services s = (Services) request.getAttribute("serv") ; %>
@@ -62,11 +67,49 @@
         </div>
             
     </div>
+
+    <%
+        String result;
+
+        String to = p.getemail();
+        String from = "Proserv@gmail.com";
+        String host = "localhost";
+        Properties properties = System.getProperties();
+        properties.setProperty("mail.smtp.host", host);
+        Session session = Session.getDefaultInstance(properties);
+        try {
+            // Create a default MimeMessage object.
+            MimeMessage message = new MimeMessage(session);
+            // Set From: header field of the header.
+            message.setFrom(new InternetAddress(from));
+            // Set To: header field of the header.
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+            // Set Subject: header field
+            message.setSubject("Regarding your Booking!");
+            String content = "Thank You for your booking Sir/Mam," + p.getName() + "is your professional whose Contact is:" + p.getmob_no() + ".Willing to Serve you again!";
+            // Now set the actual message
+            message.setText(content);
+            // Send Message
+            Transport.send(message);
+            result = "Message sent Successfully!";
+        }
+        catch (MessagingException mex) {
+            mex.printStackTrace();
+            result = "Error: unable to send message!";
+        }
+    %>
+
             
     <div class="alert alert-info" style="text-align: center">
         <h1>Thank You !! Visit Again</h1>
-    </div>  
-    
+    </div>
+
+    <p align = "center">
+        <%
+            out.println("Result: " + result + "\n");
+        %>
+    </p>
+
      <a class="btn btn-primary" href="/AWP_webapp/adminlogoutservlet">Logout</a>
       
         
